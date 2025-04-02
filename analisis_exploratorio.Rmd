@@ -119,6 +119,25 @@ clustering <- hclust(dist(t(logData)), method="average")
 plot(clustering, hang=-1, xlim=c(0,100))
 ```
 
+## Metabolitos diferencialmente expresados
 
+Finalmente, suponiendo que algunos de los metabolitos se expresen diferencialmente entre las dos condiciones se puede intentar determinar cuáles son los metabolitos más interesantes para el estudio utilizando el test t que determina la expresión diferencial entre dos condiciones.
 
+```{r}
+# Se genera una función que aplique el test t y devuelva los pvalores
+ttest <- function(x){tt=t.test(x[1:47],x[48:77])
+return(tt$p.value)}
+
+# Se aplica la función a los datos y se extraen los pvalores
+resp <- apply(logData,1,ttest)
+pvals <- resp
+
+# Utilizando los pvalores detectamos cuantos metabolitos son de interés 
+for (i in 0.05)
+  print(paste("Metabolitos de interés:", length(which(pvals<i))))
+
+# Se puede restringir más la búsqueda
+for (i in 0.0001)
+  print(paste("Metabolitos de interés (restricción):", length(which(pvals<i))))
+```
 
