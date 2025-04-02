@@ -2,7 +2,9 @@
 title: "Análisis exploratorio de los datos"
 author: "Erise Pérez Pascual"
 date: "2025-04-02"
-output: pdf_document
+output: 
+  pdf_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -56,14 +58,17 @@ summary(data)
 Las variables se pueden representar mediante histogramas.
 
 ```{r}
-# Dibujamos un histograma para cada muestra
+# Indicamos que los histogramas se muestren con una disposición 3x3 en pantalla
 opt <- par(mfrow=c(3,3))
+
+# Mediante una iteración a todas las columnas de los datos hacemos un histograma
+# para cada muestra
 for(i in 1:ncol(data))
   hist(data[,i], main=names(data)[i])
 par(opt)
 ```
 
-Mientras que los histogramas representan una muestra cada vez, se pueden usar diagramas de cajas para ver todas las variables a la vez. Tanto en los histogramas como en el diagrama de puntos se ve que hay una gran asimetría.
+Mientras que los histogramas representan una muestra cada vez, se pueden usar diagramas de cajas para ver todas las variables a la vez. 
 
 ```{r}
 # Asignamos colores por grupos
@@ -75,10 +80,44 @@ boxplot(data, col=groupColors,
         ylab="Expresión", las=2, cex.axis=0.7, cex.main=0.7)
 ```
 
+Tanto en los histogramas como en el diagrama de puntos se ve que hay una gran asimetría. Primero se comprobará si la asimetría puede ser corregida utilizando logaritmos. La asimetría se corrige en gran medida transformando logarítmicamente los datos tal y como se ve en el diagrama de cajas.
 
+```{r}
+# Hacemos una transformación logarítmica de los datos
+logData <- log2(data)
 
+# Asignamos colores por grupos
+groupColors <- c(rep("red", 47), rep("blue", 30))
 
+# Dibujamos el diagrama de cajas
+boxplot(logData, col=groupColors,
+        xlab="Slides",
+        ylab="Expresión", las=2, cex.axis=0.7, cex.main=0.7)
+```
 
+## Análisis multivariante
+
+Se puede usar un análisis de componentes principales dirigido a los tipos de muestra (caquexia vs control) que represente los primeros dos componentes.
+
+```{r}
+# Se computan los componentes principales
+pca <- prcomp(t(logData), scale = FALSE)
+loads <- round(pca$sdev^2/sum(pca$sdev^2)*100,1)
+
+# Se representan los dos componentes principales
+xlab <- c(paste("PC1", loads[1], "%"))
+ylab <- c(paste("PC2", loads[2], "%"))
+plot(pca$x[,1:2], xlab=xlab, ylab=ylab, col=groupColors, 
+     main="Análisis de componentes principales (PCA)")
+```
+
+Finalmente, se puede usar un análisis de clustering jerárquico para visualizar agrupamientos de las muestras.
+
+```{r}
+# Se hace el agrupamiento jerárquico y se grafica
+clustering <- hclust(dist(t(logData)), method="average")
+plot(clustering, hang=-1, xlim=c(0,100))
+```
 
 
 
