@@ -1,0 +1,85 @@
+---
+title: "Análisis exploratorio de los datos"
+author: "Erise Pérez Pascual"
+date: "2025-04-02"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Carga y preparación de los datos
+
+En el análisis exploratorio de los datos se trabajará con el archivo en formato `.txt` que contiene la matriz de datos que se ha generado a partir de un objeto de tipo `SummarizedExperiment`.
+
+```{r}
+# Cargamos los datos en formato .txt
+# La primera fila corresponde a los nombres de cada columna, la primera columna a
+# los nombres de cada fila y los datos están separados por comas
+data <- read.table("datamatrix.txt", header=TRUE,sep=",",row.names=1)
+# Observamos las primeras filas de la matriz de datos
+head(data)
+```
+
+Se puede observar que hay 77 columnas correspondientes a las muestras bajo dos condiciones: 47 muestras pertenecen a pacientes con caquexia y 30 pertenecen a pacientes control. Por otra parte, el dataset tiene 63 filas que corresponden a los metabolitos estudiados. Se puede observar que el nombre de las columnas no es muy informativo, por lo que primero se reetiquetan las columnas.
+
+```{r}
+# Observamos el nombre de las columnas
+colnames(data)
+```
+
+```{r}
+# Se reetiquetan las columnas en base al tipo de muestra
+colnames(data) <- paste(c(rep("Caquexia", 47), rep("Control", 30)))
+colnames(data)
+```
+
+Por otra parte, los nombres de las filas hacen referencia a los metabolitos estudiados.
+
+# Análisis exploratorio
+
+## Análisis univariante
+
+Para comenzar con el análisis se observará la estructura del dataset con la función `str()` y se hará un pequeño resumen estadístico de las variables con `summary()`.
+
+```{r}
+# Se estudia la estructura del dataset
+str(data)
+```
+
+```{r}
+# Se hace el análisis descriptivo
+summary(data)
+```
+
+Las variables se pueden representar mediante histogramas.
+
+```{r}
+# Dibujamos un histograma para cada muestra
+opt <- par(mfrow=c(3,3))
+for(i in 1:ncol(data))
+  hist(data[,i], main=names(data)[i])
+par(opt)
+```
+
+Mientras que los histogramas representan una muestra cada vez, se pueden usar diagramas de cajas para ver todas las variables a la vez. Tanto en los histogramas como en el diagrama de puntos se ve que hay una gran asimetría.
+
+```{r}
+# Asignamos colores por grupos
+groupColors <- c(rep("red", 47), rep("blue", 30))
+
+# Dibujamos el diagrama de cajas
+boxplot(data, col=groupColors,
+        xlab="Slides",
+        ylab="Expresión", las=2, cex.axis=0.7, cex.main=0.7)
+```
+
+
+
+
+
+
+
+
+
