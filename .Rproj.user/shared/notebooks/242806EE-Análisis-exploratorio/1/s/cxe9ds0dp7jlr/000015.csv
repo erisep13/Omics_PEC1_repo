@@ -1,0 +1,9 @@
+"0","# Asignamos colores por grupos"
+"0","groupColors <- c(rep(""red"", 47), rep(""blue"", 30))"
+"0",""
+"0","# Dibujamos el diagrama de cajas"
+"0","plot(data, col=groupColors,"
+"0","        ylab=""Expresión"", las=2, cex.axis=0.7, cex.main=0.7)"
+"2","Error in plot.default(...) : 
+  formal argument ""ylab"" matched by multiple actual arguments
+"
